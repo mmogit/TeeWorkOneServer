@@ -23,3 +23,15 @@ function wsConnect($tag, $data) {
 		response($tag, 0, 0);
 	}
 }
+function checkConnection($tag, $data) {
+	$data = json_decode($data, true);
+	$userFunctions = new dbUserFunctions();
+	$is_up = $userFunctions->wsIsActive($data['ws_unique_id']);
+	if($is_up === true) {
+		response($tag, $is_up, 0, "ws is still up");
+	} else {
+		response($tag, 0, 0);
+	}
+	
+	
+}

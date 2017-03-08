@@ -1,4 +1,8 @@
 <?php
+header("Access-Control-Allow-Origin: *");
+header('Access-Control-Allow-Methods: GET, POST');  
+//header('content-type: application/json; charset=utf-8');
+
 ini_set('error_reporting', E_ALL|E_STRICT);
 ini_set('display_errors', 1);
 require("Settings/default.php"); 
@@ -10,17 +14,17 @@ require_once("WS/response.php");
 
 //$setup = new setup();
 
-function checkLogin($tag, $data) {
+function checkWSLogin($action, $unique_id) {
 	$userFunctions = new dbUserFunctions();
-	$data = json_decode($data, true);
-	if(isset($data['ws_unique_id'])) {
-		if($userFunctions->wsIsActive($data['ws_unique_id'])) {
+
+	if(isset($unique_id)) {
+		if($userFunctions->wsIsActive($unique_id)) {
 			return true;
 		} else {
-			response($tag, 0, 1, "Webservice connection not active - please login!");
+			response($action, 0, 1, "Webservice connection not active - please login!");
 		}
 	} else {
-		response($tag, 0, 1, "missing unique_id of connection!");
+		response($action, 0, 1, "missing unique_id of connection!");
 	}
 	return false;
 }
@@ -28,27 +32,35 @@ function checkLogin($tag, $data) {
  /**
  * check for POST request
  */
-if (isset($_REQUEST['tag']) && $_REQUEST['tag'] != '') {
-	// get tag
-	$tag = $_REQUEST['tag'];
+if (isset($_REQUEST['action']) && $_REQUEST['action'] != '') {
+	// get action
+	$action = $_REQUEST['action'];
+	if(isset($_REQUEST['unique_id'])) {
+		$unique_id = $_REQUEST['unique_id'];
+	}
 	$data = $_REQUEST['data'];
 	
-	// check for tag type
-	switch($tag) {
+	// check for action type
+	switch($action) {
 		case "connect": 
 			require "WS/connect.php";
-			$connection = wsConnect($tag, $data);
+			$connection = wsConnect($action, $data);
+		break;
+		case "checkConnection": 
+			require "WS/connect.php";
+			checkConnection($action, $data);
 		break;
 		case "login": 
-			if(checkLogin($tag,$data)) {
+			if(checkWSLogin($action,$unique_id)) {
 				require "WS/login.php";
-				wsLogin($tag, $data);
+				wsLogin($action, $data);
 			}
 		break;
 		case "addUser": 
-			if(checkLogin($tag,$data)) {
+			if(checkWSLogin($action,$unique_id)) {
+				die("huhasdf");
 				require "WS/addUser.php";
-				wsAddUser($tag, $data);
+				wsAddUser($action, $data);
 			}
 		break;
 		default:

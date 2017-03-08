@@ -102,6 +102,7 @@ class dbUserFunctions {
 	}
 	
 	public function wsIsActive($uniqueID) {
+		$uniqueID = mysqli_real_escape_string($this->db->getLink(), $uniqueID);
 		$result = mysqli_query($this->db->getLink(), "SELECT login_active from ".WS_CONNECTION_USER_TABLE." WHERE unique_id = '$uniqueID'");
 		
 		$rows = mysqli_num_rows($result);
