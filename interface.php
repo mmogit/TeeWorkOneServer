@@ -63,6 +63,12 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] != '') {
 				wsAddUser($action, $data);
 			}
 		break;
+		case "getRatings": 
+			if(checkWSLogin($action,$unique_id)) {
+				require "WS/getRatings.php";
+				wsGetRatings($action, $data);
+			}
+		break;
 		default:
 			echo "{invalid Request}";
 		break;

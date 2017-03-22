@@ -2,7 +2,7 @@
 $dbInfo = array(
     'host'      => "localhost",
     'user'      => "root",
-    'pass'      => 'Swordfish',
+    'pass'      => '$MyPW4Mysql',
 	'database'	=> "TeeWorkOne" 
 );
 ?>

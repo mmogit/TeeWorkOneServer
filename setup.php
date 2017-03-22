@@ -1,4 +1,5 @@
 <?php
+ini_set("display_errors", 1);
 require_once("Settings/default.php");
 require_once("Classes/dbBasicFunctions.php");
 require_once("Classes/dbUserFunctions.php");
