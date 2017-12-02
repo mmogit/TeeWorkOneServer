@@ -1,0 +1,6 @@
+Header add Access-Control-Allow-Origin "*"
+
+#AuthType Basic
+#AuthName "My Protected Area"
+#AuthUserFile /var/www/tee.fabelastisch.de/web/TeeWorkOneServer/.htpasswd
+#Require valid-user

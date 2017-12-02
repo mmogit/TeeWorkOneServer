@@ -1,8 +1,8 @@
 <?PHP
 $dbInfo = array(
     'host'      => "localhost",
-    'user'      => "root",
+    'user'      => "c1root",
     'pass'      => '$MyPW4Mysql',
-	'database'	=> "TeeWorkOne" 
+	'database'	=> "c1TeeWorkOne" 
 );
 ?>

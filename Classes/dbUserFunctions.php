@@ -1,11 +1,14 @@
 <?php
+
 //todo mysqli_real_escape_string
 class dbUserFunctions {
 
 	private $db;
     function __construct() {
 		require_once("db.php");	
+		require_once("dbBasicFunctions.php");
 		$this->db = new database();
+		$this->dbBasicFunctions = new dbBasicFunctions();
     }
 	
     // destructor
@@ -22,13 +25,30 @@ class dbUserFunctions {
         $hash = $this->hashSSHA($password);
         $encrypted_password = $hash["encrypted"]; // encrypted password
         $salt = $hash["salt"]; // salt
-		$result = mysqli_query($this->db->getLink(), "INSERT INTO $table(unique_id, name, email, encrypted_password, salt, created_at) VALUES('$uuid', '$name', '$email', '$encrypted_password', '$salt', NOW())");
+		
+		$existing = $this->dbBasicFunctions->dbSelect("SELECT * from ".$this->dbBasicFunctions->escape_string($table)." WHERE email='".$this->dbBasicFunctions->escape_string($email)."'");
+		if(is_array($existing) && isset($existing[0])){
+			$result = $this->dbBasicFunctions->dbUpdateArray($table,$existing[0]['id'], array("name" => $name, "encrypted_password" => $encrypted_password, "salt" => $salt, "updated_at" => date('Y-m-d G:i:s')));
+			if($result == true){
+				response("dbUserFunctions->storeUser", 1, 0, true);
+				return true;
+			} else {
+				response("dbUserFunctions->storeUser", 0, 1, $result);
+				return false;
+			}
+		}
+		else {
+			$userArray = array("unique_id" => $uuid, "name" => $name, "email" => $email, "encrypted_password" => $encrypted_password, "salt" => $salt, "created_at" => date('Y-m-d G:i:s'));
+			//$result = mysqli_query($this->db->getLink(), "INSERT INTO $table(unique_id, name, email, encrypted_password, salt, created_at) VALUES('$uuid', '$name', '$email', '$encrypted_password', '$salt', NOW())");
+			$result = $this->dbBasicFunctions->dbInsertArray($table, $userArray);
+		}
+       
         // check for successful store
         if ($result) {
             // get user details 
-            $result = mysqli_query($this->db->getLink(), "SELECT * FROM $table WHERE unique_id = \"$uuid\"");
+            $result = $this->dbBasicFunctions->dbSelect("SELECT * FROM $table WHERE unique_id = \"$uuid\"");
             // return user details
-            return mysqli_fetch_array($result);
+            return $result;
         } else {
             return false;
         }
@@ -42,15 +62,20 @@ class dbUserFunctions {
         // check for result 
         $no_of_rows = mysqli_num_rows($result);
         if ($no_of_rows > 0) {
-            $result = mysqli_fetch_array($result);
+            $result = mysqli_fetch_assoc($result);
+
             $salt = $result['salt'];
             $encrypted_password = $result['encrypted_password'];
-            $hash = $this->checkhashSSHA($salt, $password);
+            $hash = $this->checkHashSSHA($salt, $password);
+
             // check for password equality
             if ($encrypted_password == $hash) {
                 // user authentication details are correct
                 return $result;
             }
+			else {
+				return "password wrong";
+			}
         } else {
             // user not found
             return false;
@@ -77,9 +102,9 @@ class dbUserFunctions {
      */
     public function hashSSHA($password) {
 
-        $salt = sha1(rand());
+        $salt = hash('sha256', rand());
         $salt = substr($salt, 0, 10);
-        $encrypted = base64_encode(sha1($password . $salt, true) . $salt);
+        $encrypted = base64_encode(hash('sha512', $password . $salt) . $salt);
         $hash = array("salt" => $salt, "encrypted" => $encrypted);
         return $hash;
     }
@@ -89,10 +114,9 @@ class dbUserFunctions {
      * @param salt, password
      * returns hash string
      */
-    public function checkhashSSHA($salt, $password) {
+    public function checkHashSSHA($salt, $password) {
 
-        $hash = base64_encode(sha1($password . $salt, true) . $salt);
-
+        $hash = base64_encode(hash('sha512', $password . $salt) . $salt);
         return $hash;
     }
 	

@@ -2,6 +2,18 @@
 require_once("Classes/db.php");
 
 class dbBasicFunctions {
+    function dbSelect($query){
+		$db = new database();		
+		$dbresult = mysqli_query($db->getLink(), $query) or die(mysqli_error($db->getLink()));
+        $resultarray = array();
+        while ($row = mysqli_fetch_assoc($dbresult)) {
+            $resultarray[] = $row;
+        }
+        mysqli_free_result($dbresult);
+        mysqli_close($db->getLink());
+        
+        return $resultarray;
+	}
 	function dbInsertArray($tableName, $insData){
 		$db = new database();
 		
@@ -13,6 +25,36 @@ class dbBasicFunctions {
 		
 		mysqli_query($db->getLink(), $query) or die(mysqli_error($db->getLink()));
 		mysqli_close($db->getLink());
+		return true;
+	}
+	function dbUpdateArray($tableName, $idToUpdate, $insData){
+		$db = new database();
+		
+		$query = "UPDATE $tableName set ";
+		foreach($insData as $key => $val) {
+			$query .= $this->escape_string($key)."='".$this->escape_string($val)."' ";
+			if( next( $insData ) !== FALSE ) {
+				$query .= ", ";
+			}
+		}
+		$query .= " WHERE id='".intval($this->escape_string($idToUpdate))."'";
+		
+		mysqli_query($db->getLink(), $query) or die(mysqli_error($db->getLink()));
+		mysqli_close($db->getLink());
+		return true;
+	}
+	function exists($tableName, $column, $value) {
+		$db = new database();
+		
+		$column = $this->escape_string($column);
+		$value = $this->escape_string($value);
+		
+		$dbresult = mysqli_query($db->getLink(), "select * from $tableName where $column='$value'") or die(mysqli_error($db->getLink()));
+		$count = mysqli_num_rows($dbresult);
+		if($count > 0)
+			return true;
+		else
+			return false;
 	}
 
 	function dbCreateTable($tableName, $columns) {

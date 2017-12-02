@@ -1,8 +1,7 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header('Access-Control-Allow-Methods: GET, POST');  
+//header("Access-Control-Allow-Origin: *");
+//header('Access-Control-Allow-Methods: GET, POST');
 //header('content-type: application/json; charset=utf-8');
-
 ini_set('error_reporting', E_ALL|E_STRICT);
 ini_set('display_errors', 1);
 require("Settings/default.php"); 
@@ -10,24 +9,6 @@ require("Classes/db.php");
 require("Classes/dbBasicFunctions.php");
 require("Classes/dbUserFunctions.php");
 require_once("WS/response.php");
-//require("setup.php");
-
-//$setup = new setup();
-
-function checkWSLogin($action, $unique_id) {
-	$userFunctions = new dbUserFunctions();
-
-	if(isset($unique_id)) {
-		if($userFunctions->wsIsActive($unique_id)) {
-			return true;
-		} else {
-			response($action, 0, 1, "Webservice connection not active - please login!");
-		}
-	} else {
-		response($action, 0, 1, "missing unique_id of connection!");
-	}
-	return false;
-}
 
  /**
  * check for POST request
@@ -42,32 +23,49 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] != '') {
 	
 	// check for action type
 	switch($action) {
-		case "connect": 
-			require "WS/connect.php";
-			$connection = wsConnect($action, $data);
-		break;
-		case "checkConnection": 
-			require "WS/connect.php";
-			checkConnection($action, $data);
-		break;
-		case "login": 
-			if(checkWSLogin($action,$unique_id)) {
-				require "WS/login.php";
-				wsLogin($action, $data);
-			}
-		break;
 		case "addUser": 
-			if(checkWSLogin($action,$unique_id)) {
-				die("huhasdf");
-				require "WS/addUser.php";
-				wsAddUser($action, $data);
-			}
+			require "WS/wsAddUser.php";
+            wsAddUser($action, $data);
+		break;
+		case "addRatingUnit": 
+            require "WS/wsAddRatingUnit.php";
+			wsAddRatingUnit($action, $data);
+		break;
+		case "addTea": 
+            require "WS/wsAddTea.php";
+			wsAddTea($action, $data);
+		break;
+		case "addRating": 
+            require "WS/wsAddRating.php";
+			wsAddRating($action, $data);
 		break;
 		case "getRatings": 
-			if(checkWSLogin($action,$unique_id)) {
-				require "WS/getRatings.php";
-				wsGetRatings($action, $data);
-			}
+            require "WS/wsGetRatings.php";
+			wsGetRatings($action, $data);
+		break;
+		case "getRatingUnits": 
+            require "WS/wsGetRatingUnits.php";
+			wsGetRatingUnits($action, $data);
+		break;
+		case "getTeas": 
+            require "WS/wsGetTeas.php";
+			wsGetTeas($action, $data);
+		break;
+		case "getUser": 
+            require "WS/wsGetUser.php";
+			wsGetUser($action, $data);
+		break;
+		case "getUserByID": 
+            require "WS/wsGetUserByID.php";
+			wsGetUserByID($action, $data);
+		break;
+		case "getRatingUnitByID": 
+            require "WS/wsGetRatingUnitByID.php";
+			wsGetRatingUnitByID($action, $data);
+		break;
+		case "getTeaByID": 
+            require "WS/wsGetTeaByID.php";
+			wsGetTeaByID($action, $data);
 		break;
 		default:
 			echo "{invalid Request}";

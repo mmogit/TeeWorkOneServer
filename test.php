@@ -2,90 +2,152 @@
 <html>
 
 <head>
-<script src="https://www.fabelastisch.de/TeeWorkOneServer/jquery-3.1.1.min.js"></script>
+<script src="https://tee.fabelastisch.de/TeeWorkOneServer/jquery-3.1.1.min.js"></script>
 <!--<script src="https://www.fabelastisch.de/TeeWorkOneServer/json2.js"></script>-->
 </head>
 <body>hi
 <script>
 jQuery(document).ready(function($) {
-	var ws_unique_id = "";
+	console.log("drin");
+	var USERNAME = "TeeWork1";
+	var PASSWORD = "MyTeePW";
+    $.ajax({
+		url: "https://tee.fabelastisch.de/TeeWorkOneServer/interface.php",
+		data: {
+			action: "getRatings",
+			data: JSON.stringify( {
+			}),
+		},
+
+		//username: USERNAME,
+		//password: PASSWORD,
+		success: function(result) {
+			console.log(result);
+			result = JSON.parse(result);
+			res = result['data'];
+			$("#result").html($("#result").html()+res+"<br>");
+		},
+		async: false
+	});
+	$.ajax({
+		url: "https://tee.fabelastisch.de/TeeWorkOneServer/interface.php",
+		data: {
+			action: "getTeas",
+			data: JSON.stringify( {
+			}),
+		},
+
+		//username: USERNAME,
+		//password: PASSWORD,
+		success: function(result) {
+			console.log(result);
+			result = JSON.parse(result);
+			res = result['data'];
+			$("#result").html($("#result").html()+res+"<br>");
+		},
+		async: false
+	});
+	$.ajax({
+		url: "https://tee.fabelastisch.de/TeeWorkOneServer/interface.php",
+		data: {
+			action: "getUser",
+			data: JSON.stringify( {
+				email: "mptrace@googlemail.com",
+				password: "TeeWorkOne",
+			}),
+		},
+
+		//username: USERNAME,
+		//password: PASSWORD,
+		success: function(result) {
+			console.log(result);
+			result = JSON.parse(result);
+			res = result['data'];
+			$("#result").html($("#result").html()+res+"<br>");
+		},
+		async: false
+	});
 	
-	//Webservice create Connection
-	$.ajax({
-		url: "https://www.fabelastisch.de/TeeWorkOneServer/interface.php",
-		data: {
-			tag: "connect",
-			data: JSON.stringify( {
-				email: "mptrace@googlemail.com",
-				password: "TeeWorkOne",
-			}),
-		},
-		success: function(result) {
-			result = JSON.parse(result);
-			ws_unique_id = result['data'];
-			$("#result").html($("#result").html()+"connection up "+ws_unique_id+"<br>");
-		},
-		async: false
-	});
-
-	//login
-	$.ajax({
-		url: "https://www.fabelastisch.de/TeeWorkOneServer/interface.php",
-		data: {
-			tag: "login",
-			data: JSON.stringify( {
-				ws_unique_id: ws_unique_id,
-				email: "mptrace@googlemail.com",
-				password: "TeeWorkOne",
-			}),
-		},
-		success: function(result) {
-			result = JSON.parse(result);
-			tw_unique_id = result['data'];
-			$("#result").html($("#result").html()+"login "+tw_unique_id+"<br>");
-		},
-		async: false
-	});
-
 	//add user
-	$.ajax({
-		url: "https://www.fabelastisch.de/TeeWorkOneServer/interface.php",
+	/*$.ajax({
+		url: "https://tee.fabelastisch.de/TeeWorkOneServer/interface.php",
 		data: {
-			tag: "addUser",
+			action: "addUser",
 			data: JSON.stringify( {
-				ws_unique_id: ws_unique_id,
-				user: "mmo",
-				email: "mptrace@googlemail.com",
-				password: "TeeWorkOne",
+				register_username: "mmo",
+				register_email: "mptrace@googlemail.com",
+				register_password: "TeeWorkOne",
 			}),
 		},
 		success: function(result) {
 			console.log(result);
 			result = JSON.parse(result);
-			hulu = result['data'];
-			$("#result").html($("#result").html()+hulu+"<br>");
+			res = result['data'];
+			$("#result").html($("#result").html()+res+"<br>");
 		},
 		async: false
 	});
-	//give it another try
+	/*
+	//add rating unit
 	$.ajax({
-		url: "https://www.fabelastisch.de/TeeWorkOneServer/interface.php",
+		url: "https://tee.fabelastisch.de/TeeWorkOneServer/interface.php",
 		data: {
-			tag: "login",
+			action: "addRatingUnit",
 			data: JSON.stringify( {
-				ws_unique_id: ws_unique_id,
-				email: "mptrace@googlemail.com",
-				password: "TeeWorkOne",
+				title: "4",
 			}),
 		},
 		success: function(result) {
+			console.log(result);
 			result = JSON.parse(result);
-			tw_unique_id = result['data'];
-			$("#result").html($("#result").html()+"2ndlogin "+tw_unique_id+"<br>");
+			res = result['data'];
+			$("#result").html($("#result").html()+res+"<br>");
 		},
 		async: false
 	});
-	
+	//add tea
+	$.ajax({
+		url: "https://tee.fabelastisch.de/TeeWorkOneServer/interface.php",
+		data: {
+			action: "addTea",
+			data: JSON.stringify( {
+				brand: "Teekanne",
+				name: "Granatapfel",
+				steeping_time: "5-8",
+			}),
+		},
+		success: function(result) {
+			console.log(result);
+			result = JSON.parse(result);
+			res = result['data'];
+			$("#result").html($("#result").html()+res+"<br>");
+		},
+		async: false
+	});
+	//add rating
+	//add tea
+	$.ajax({
+		url: "https://tee.fabelastisch.de/TeeWorkOneServer/interface.php",
+		data: {
+			action: "addRating",
+			data: JSON.stringify( {
+				id_tea: "1",
+				id_user: "1",
+				id_rating_unit: "2",
+				taste: "1",
+				smell: "1",
+			}),
+		},
+		success: function(result) {
+			console.log(result);
+			result = JSON.parse(result);
+			res = result['data'];
+			$("#result").html($("#result").html()+res+"<br>");
+		},
+		async: false
+	});
+    */
+		
 });
 </script>
 <div id="result">result<br></div>
